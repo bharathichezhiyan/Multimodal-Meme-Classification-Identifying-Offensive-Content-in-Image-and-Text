@@ -1,0 +1,276 @@
+/*Program to Create Google forms from Google Drive Folder
+Inputs should be in csv file*/
+
+/*var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('List');
+  var range = sheet.getRange('A:A');
+  var values = range.getValues();
+  var df = DriveApp.getFolderById('xxxx_YOUR_FOLDER_ID_HERE_xxxx');
+
+  for(var i=0;i<values.length;i++) {
+    if( values[i][0] != '' ) {
+      var newSS = SpreadsheetApp.create(values[i][0]);
+      var driveFile = DriveApp.getFileById(newSS.getId());
+      df.addFile(driveFile);
+      DriveApp.removeFile(driveFile);
+    }
+  } */
+  
+
+function myFunction() {
+ var folders_with_given_name = DriveApp.getFoldersByName('SHARDUL');
+  var destination_folder=DriveApp.getFoldersByName('SHARDUL')
+ //var df=destination_folder.getId
+ while (folders_with_given_name.hasNext()) {
+   var folder = folders_with_given_name.next();
+ }
+   while (destination_folder.hasNext()) {
+   var d_folder = destination_folder.next();
+ }
+  var files = folder.getFilesByType(MimeType.CSV);
+  while (files.hasNext()){
+    var file = files.next();
+    var filename = file.getName();
+    
+    var spreadsheet = SpreadsheetApp.create(filename);
+    
+     var driveFile = DriveApp.getFileById(spreadsheet.getId());
+    d_folder.addFile(driveFile)
+    DriveApp.removeFile(driveFile)
+    
+    //var sheet= spreadsheet.insertSheet();
+    var csvData = Utilities.parseCsv(file.getBlob().getDataAsString(),'\t');
+    for(var row_idx=0;row_idx<csvData.length;row_idx++){
+      for(var col_idx=0;col_idx<csvData[0].length;col_idx++){
+        csvData[row_idx][col_idx] = csvData[row_idx][col_idx].trim();
+      }
+    }
+    var sheet = spreadsheet.getActiveSheet();
+
+    sheet.getRange(1, 1, csvData.length, csvData[0].length).setValues(csvData);
+    
+
+  //var Spreadsheet = spreadsheet
+ var gsheet_name = 'Sheet1'//Spreadsheet.getName();
+ //var ss =  //spreadsheet.getSheetByName(gsheet_name);
+ var range = sheet.getDataRange();//ss.getDataRange(); 
+ var data = range.getValues();
+ var numberRows = range.getNumRows();
+ var numberColumns = range.getNumColumns();
+ var firstRow = 1;
+ var new_form = FormApp.create(filename);
+ new_form.setProgressBar(true);
+ new_form.setCollectEmail(true);
+ new_form.setRequireLogin(false);
+ new_form.setAllowResponseEdits(true);
+ new_form.setLimitOneResponsePerUser(true);
+ new_form.setShowLinkToRespondAgain(false)
+ var response_ss = SpreadsheetApp.create(filename+'response');
+    
+ var response_File = DriveApp.getFileById(response_ss.getId());
+ d_folder.addFile(response_File)
+ DriveApp.removeFile(response_File)
+ 
+ new_form.setDestination(FormApp.DestinationType.SPREADSHEET, response_ss.getId()); 
+ 
+ var form_File = DriveApp.getFileById(new_form.getId());
+ d_folder.addFile(form_File)
+ DriveApp.removeFile(form_File)
+ 
+ var item = new_form.addMultipleChoiceItem();
+ item.setTitle('I understand that data created during this study belong to Ph.D. canditate Bharathi Raja Asoka Chakravarthi, Insight Centre for Data Analytics, Data Science Insititute, National University of Galway for his Ph.D work. ')
+     .setChoices([
+         item.createChoice('Yes', FormApp.PageNavigationType.CONTINUE),
+         item.createChoice('No', FormApp.PageNavigationType.RESTART)
+     ]);
+ item.setRequired(true);
+
+ // Add another page because navigation has no effect on the last page.
+ new_form.addPageBreakItem().setTitle('Thank you for your help!');
+
+ // Log the navigation types that each choice results in.
+
+ 
+ //var paragraphTextItem = new_form.addParagraphTextItem().setTitle('I understand that data created during this study belong to Ph.D. canditate Bharathi Raja Asoka Chakravarthi, Insight Centre for Data Analytics, Data Science Insititute, National University of Galway for his Ph.D work. ');
+
+
+ /*var gsheet_name = 'Sheet1'//Spreadsheet.getName();
+ //var ss = spreadsheet.getSheetByName(gsheet_name);
+ var range = sheet.getDataRange()//ss.getDataRange(); 
+ var data = range.getValues();
+ var numberRows = range.getNumRows();
+ var numberColumns = range.getNumColumns();
+ var firstRow = 1;
+ var new_form = FormApp.create(gsheet_name);
+ new_form.setProgressBar(true);
+ new_form.setCollectEmail(true);
+ new_form.setRequireLogin(false);
+ new_form.setAllowResponseEdits(true);
+ new_form.setLimitOneResponsePerUser(true);
+ new_form.setShowLinkToRespondAgain(false)*/
+ 
+ var form_id = new_form.getId();
+ var form = FormApp.openById(form_id);
+  
+ for(var i=0;i<numberRows;i++){
+  var questionType = data[i][0]; 
+  if (questionType==''){
+     continue;
+  }
+  else if(questionType=='TEXT'){
+   form.addTextItem()
+     .setTitle(data[i][1]) 
+     .setHelpText(data[i][2])
+     .setRequired(true);   
+  } 
+  else if(questionType=='PARAGRAPH'){
+   form.addParagraphTextItem()
+     .setTitle(data[i][1]) 
+     .setHelpText(data[i][2])
+     .setRequired(true);
+  } 
+  else if(questionType=='CHOICE'){
+
+  var rowLength = data[i].length;
+  var currentRow = firstRow+i;
+  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
+  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
+  var numberOfColumnsSheet = getSheetRange.getNumColumns();
+  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
+  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
+  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
+  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
+  var choicesForQuestion =[];
+    for (var j=0;j<optionsArray[0].length;j++){
+        choicesForQuestion.push(optionsArray[0][j]);
+        }
+  form.addMultipleChoiceItem()
+    .setTitle(data[i][1]) 
+    .setHelpText(data[i][2])
+    .setChoiceValues(choicesForQuestion)
+    .setRequired(true); 
+  }
+  else if(questionType=='CHECKBOX'){
+  var rowLength = data[i].length;
+  var currentRow = firstRow+i;
+  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
+  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
+  var numberOfColumnsSheet = getSheetRange.getNumColumns();
+  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
+  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
+  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
+  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
+  var choicesForQuestion =[];
+    for (var j=0;j<optionsArray[0].length;j++){
+        choicesForQuestion.push(optionsArray[0][j]);
+        }
+  form.addCheckboxItem()
+    .setTitle(data[i][1]) 
+    .setHelpText(data[i][2])
+    .setChoiceValues(choicesForQuestion)
+    .setRequired(true);
+  }
+  else if(questionType=='LIST'){
+  var rowLength = data[i].length;
+  var currentRow = firstRow+i;
+  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
+  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
+  var numberOfColumnsSheet = getSheetRange.getNumColumns();
+  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
+  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
+  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
+  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
+  var choicesForQuestion =[];
+    for (var j=0;j<optionsArray[0].length;j++){
+        choicesForQuestion.push(optionsArray[0][j]);
+        }
+  form.addListItem()
+    .setTitle(data[i][1]) 
+    .setHelpText(data[i][2])
+    .setChoiceValues(choicesForQuestion)
+    .setRequired(true);
+  }
+  else if(questionType=='GRID'){
+  var rowLength = data[i].length;
+  var currentRow = firstRow+i;
+  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
+  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
+  var numberOfColumnsSheet = getSheetRange.getNumColumns();
+  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
+  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
+  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
+  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
+  var rowTitles =[];
+    for (var j=0;j<optionsArray[0].length;j++){
+        rowTitles.push(optionsArray[0][j]);
+        }
+  var rowLength = data[i+1].length;
+  var currentRow = firstRow+i+1;
+  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
+  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
+  var numberOfColumnsSheet = getSheetRange.getNumColumns();
+  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
+  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
+  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
+  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
+  var columnTitles =[];
+    for (var j=0;j<optionsArray[0].length;j++){
+        columnTitles.push(optionsArray[0][j]);
+        }  
+  form.addGridItem()
+    .setTitle(data[i][1]) 
+    .setHelpText(data[i][2])
+    .setRows(rowTitles)
+    .setColumns(columnTitles)
+    .setRequired(true);
+  } 
+  else if(questionType=='IMAGE'){
+   var img = UrlFetchApp.fetch(data[i][3]); 
+   form.addImageItem()
+     .setTitle(data[i][1]) 
+     .setImage(img);
+  var rowLength = data[i].length;
+  var currentRow = firstRow+i;
+  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
+  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
+  var numberOfColumnsSheet = getSheetRange.getNumColumns();
+  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
+  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
+  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
+  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
+  var choicesForQuestion =[];
+    for (var j=0;j<optionsArray[0].length;j++){
+        choicesForQuestion.push(optionsArray[0][j]);
+        }
+  form.addMultipleChoiceItem()
+    .setHelpText(data[i][2])
+    .setChoiceValues(choicesForQuestion)
+    .setRequired(true);
+  form.addParagraphTextItem()
+ ;
+     
+  }
+  else if(questionType=='PAGE'){
+   form.addPageBreakItem()
+     .setTitle(data[i][1]) 
+     .setHelpText(data[i][2]);   
+  } 
+  else if(questionType=='SECTION'){
+   form.addSectionHeaderItem()
+     .setTitle(data[i][1]) 
+     .setHelpText(data[i][2]);   
+  }
+  else if(questionType=='TIME'){
+   form.addTimeItem()
+     .setTitle(data[i][1]) 
+     .setHelpText(data[i][2]);   
+  }
+  else{
+    continue;
+  }
+ } 
+
+    
+
+  }
+}
