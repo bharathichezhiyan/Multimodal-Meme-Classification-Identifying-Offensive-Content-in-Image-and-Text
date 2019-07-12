@@ -1,23 +1,7 @@
-/*var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = ss.getSheetByName('List');
-  var range = sheet.getRange('A:A');
-  var values = range.getValues();
-  var df = DriveApp.getFolderById('xxxx_YOUR_FOLDER_ID_HERE_xxxx');
-
-  for(var i=0;i<values.length;i++) {
-    if( values[i][0] != '' ) {
-      var newSS = SpreadsheetApp.create(values[i][0]);
-      var driveFile = DriveApp.getFileById(newSS.getId());
-      df.addFile(driveFile);
-      DriveApp.removeFile(driveFile);
-    }
-  } */
-  
-
 function myFunction() {
 //  Creating source and destination directory
- var folders_with_given_name = DriveApp.getFoldersByName('Shardul_2');
-  var destination_folder=DriveApp.getFoldersByName('Shardul_2')
+ var folders_with_given_name = DriveApp.getFoldersByName('Trial_JS');
+  var destination_folder=DriveApp.getFoldersByName('Trial_JS')
  //var df=destination_folder.getId
  while (folders_with_given_name.hasNext()) {
    var folder = folders_with_given_name.next();
@@ -85,30 +69,18 @@ function myFunction() {
          item.createChoice('No', FormApp.PageNavigationType.RESTART)
      ]);
  item.setRequired(true);
+ 
+  
+ new_form.addPageBreakItem().setTitle('Inter-Annotator Agreement');
+ var agreement = new_form.addCheckboxItem();
+    agreement.setTitle('Below are the reviewer’s guidelines for labelling the data:\n\n1.	Reviewer must review the meme in two categories either offensive or Non-offensive.\n\n2.	Memes can be deemed offensive if it intends following:\n\na.	Personal Attack\nb.	Homophobic abuse\nc.	Racial abuse\nd.	Attack on Minority \nAnd Non-offensive otherwise\n\n3.	Most of the memes come with an image and caption.\n\n4.	Reviewer must understand that images here are acting as context and play important role in conveying the intention behind it. So indeed, images or text alone sometimes may not be meaningful.')
+             .setChoiceValues(['I understood the user Guidelines mentioned above'])
+    agreement.setRequired(true);
 
  // Add another page because navigation has no effect on the last page.
  new_form.addPageBreakItem().setTitle('Thank you for your help!');
 
- // Log the navigation types that each choice results in.
 
- 
- //var paragraphTextItem = new_form.addParagraphTextItem().setTitle('I understand that data created during this study belong to Ph.D. canditate Bharathi Raja Asoka Chakravarthi, Insight Centre for Data Analytics, Data Science Insititute, National University of Galway for his Ph.D work. ');
-
-
- /*var gsheet_name = 'Sheet1'//Spreadsheet.getName();
- //var ss = spreadsheet.getSheetByName(gsheet_name);
- var range = sheet.getDataRange()//ss.getDataRange(); 
- var data = range.getValues();
- var numberRows = range.getNumRows();
- var numberColumns = range.getNumColumns();
- var firstRow = 1;
- var new_form = FormApp.create(gsheet_name);
- new_form.setProgressBar(true);
- new_form.setCollectEmail(true);
- new_form.setRequireLogin(false);
- new_form.setAllowResponseEdits(true);
- new_form.setLimitOneResponsePerUser(true);
- new_form.setShowLinkToRespondAgain(false)*/
  
  var form_id = new_form.getId();
  var form = FormApp.openById(form_id);
@@ -118,113 +90,6 @@ function myFunction() {
   if (questionType==''){
      continue;
   }
-  else if(questionType=='TEXT'){
-   form.addTextItem()
-     .setTitle(data[i][1]) 
-     .setHelpText(data[i][2])
-     .setRequired(true);   
-  } 
-  else if(questionType=='PARAGRAPH'){
-   form.addParagraphTextItem()
-     .setTitle(data[i][1]) 
-     .setHelpText(data[i][2])
-     .setRequired(true);
-  } 
-  else if(questionType=='CHOICE'){
-
-  var rowLength = data[i].length;
-  var currentRow = firstRow+i;
-  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
-  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
-  var numberOfColumnsSheet = getSheetRange.getNumColumns();
-  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
-  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
-  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
-  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
-  var choicesForQuestion =[];
-    for (var j=0;j<optionsArray[0].length;j++){
-        choicesForQuestion.push(optionsArray[0][j]);
-        }
-  form.addMultipleChoiceItem()
-    .setTitle(data[i][1]) 
-    .setHelpText(data[i][2])
-    .setChoiceValues(choicesForQuestion)
-    .setRequired(true); 
-  }
-  else if(questionType=='CHECKBOX'){
-  var rowLength = data[i].length;
-  var currentRow = firstRow+i;
-  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
-  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
-  var numberOfColumnsSheet = getSheetRange.getNumColumns();
-  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
-  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
-  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
-  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
-  var choicesForQuestion =[];
-    for (var j=0;j<optionsArray[0].length;j++){
-        choicesForQuestion.push(optionsArray[0][j]);
-        }
-  form.addCheckboxItem()
-    .setTitle(data[i][1]) 
-    .setHelpText(data[i][2])
-    .setChoiceValues(choicesForQuestion)
-    .setRequired(true);
-  }
-  else if(questionType=='LIST'){
-  var rowLength = data[i].length;
-  var currentRow = firstRow+i;
-  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
-  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
-  var numberOfColumnsSheet = getSheetRange.getNumColumns();
-  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
-  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
-  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
-  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
-  var choicesForQuestion =[];
-    for (var j=0;j<optionsArray[0].length;j++){
-        choicesForQuestion.push(optionsArray[0][j]);
-        }
-  form.addListItem()
-    .setTitle(data[i][1]) 
-    .setHelpText(data[i][2])
-    .setChoiceValues(choicesForQuestion)
-    .setRequired(true);
-  }
-  else if(questionType=='GRID'){
-  var rowLength = data[i].length;
-  var currentRow = firstRow+i;
-  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
-  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
-  var numberOfColumnsSheet = getSheetRange.getNumColumns();
-  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
-  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
-  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
-  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
-  var rowTitles =[];
-    for (var j=0;j<optionsArray[0].length;j++){
-        rowTitles.push(optionsArray[0][j]);
-        }
-  var rowLength = data[i+1].length;
-  var currentRow = firstRow+i+1;
-  var currentRangeValues = spreadsheet.getSheetByName(gsheet_name).getRange(currentRow,1,1,rowLength).getValues();
-  var getSheetRange = spreadsheet.getSheetByName(gsheet_name).getDataRange();
-  var numberOfColumnsSheet = getSheetRange.getNumColumns();
-  var numberOfOptionsInCurrentRow = numberOfColumnsSheet;
-  var lastColumnInRange = String.fromCharCode(64 + (numberOfOptionsInCurrentRow));
-  var range_string = 'E' + currentRow + ":" + lastColumnInRange + currentRow;
-  var optionsArray = spreadsheet.getSheetByName(gsheet_name).getRange(range_string).getValues();
-  var columnTitles =[];
-    for (var j=0;j<optionsArray[0].length;j++){
-        columnTitles.push(optionsArray[0][j]);
-        }  
-  form.addGridItem()
-    .setTitle(data[i][1]) 
-    .setHelpText(data[i][2])
-    .setRows(rowTitles)
-    .setColumns(columnTitles)
-    .setRequired(true);
-  } 
   else if(questionType=='IMAGE'){
    var img = UrlFetchApp.fetch(data[i][3]); 
    form.addImageItem()
@@ -247,8 +112,8 @@ function myFunction() {
     .setHelpText(data[i][2])
     .setChoiceValues(choicesForQuestion)
     .setRequired(true);
-  form.addParagraphTextItem()
- ;
+//  form.addParagraphTextItem()
+// ;
      
   }
   else if(questionType=='PAGE'){
@@ -256,16 +121,6 @@ function myFunction() {
      .setTitle(data[i][1]) 
      .setHelpText(data[i][2]);   
   } 
-  else if(questionType=='SECTION'){
-   form.addSectionHeaderItem()
-     .setTitle(data[i][1]) 
-     .setHelpText(data[i][2]);   
-  }
-  else if(questionType=='TIME'){
-   form.addTimeItem()
-     .setTitle(data[i][1]) 
-     .setHelpText(data[i][2]);   
-  }
   else{
     continue;
   }
