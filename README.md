@@ -1,4 +1,8 @@
-# Multimodal Meme Classification: IdentifyingOffensive Content in Image and Text
+# Multimodal Meme Classification: Identifying Offensive Content in Image and Text
+
+Code for the paper
+
+Shardul Suryawanshi, Bharathi Raja Chakravarthi, Mihael Arcan and Paul Buitelaar "Multimodal Meme Classification: IdentifyingOffensive Content in Image and Text" Submitted to AICS 2019
 
 This is a document that involves step by step instructions to execute the code
 
