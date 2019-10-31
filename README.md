@@ -1,4 +1,4 @@
-# Shardul Master Project
+# Multimodal Meme Classification: IdentifyingOffensive Content in Image and Text
 
 This is a document that involves step by step instructions to execute the code
 
