@@ -14,8 +14,7 @@ If you are using the code or the dataset for your research work then please cite
     
     year = "2020",
     
-    publisher = "Association for Computational Linguistics",
-}
+    publisher = "Association for Computational Linguistics",}
 
 This is a document that involves step by step instructions to execute the code
 
