@@ -30,6 +30,7 @@ This is a document that involves step by step instructions to execute the code
 --> This data needs to be placed and directory location needs to be changed while reading the data in main code
 
 --> Once done with the setup mentioned above, one can execute the code in the sequence mentioned as below:
+
 	--> Stacked_LSTM_VGG16.ipynb
 	--> BiLSTM_VGG16.ipynb
 	--> CNN_VGG16.ipynb
