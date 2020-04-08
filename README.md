@@ -3,11 +3,17 @@
 If you are using the code or the dataset for your research work then please cite our paper below:
 
 @inproceedings{suryawanshi-etal-2020-MultiOFF,
+
     title = "Multimodal Meme Dataset (MultiOFF) for Identifying Offensive Content in Image and Text",
+    
     author = "Suryawanshi, Shardul and Chakravarthi, Bharathi Raja and Arcan, Mihael and Buitelaar, Paul,
+    
     booktitle = "Proceedings of the Second Workshop on Trolling, Aggression and Cyberbullying ({TRAC}-2020)",
+    
     month = May,
+    
     year = "2020",
+    
     publisher = "Association for Computational Linguistics",
 }
 
